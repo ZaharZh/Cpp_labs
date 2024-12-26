@@ -84,7 +84,7 @@ private:
     int alloc;
     int size;
     Computer* comps;
-
+public:
     void resize() {
         alloc = alloc ? alloc * 2 : 1;
         Computer* olds = comps;
@@ -175,7 +175,6 @@ private:
         file.close();
     }
 
-public:
     ComputerList() : alloc(0), size(0), comps(nullptr) {}
 
     ComputerList(int initialAlloc) : alloc(initialAlloc), size(0), comps(new Computer[initialAlloc]) {}
@@ -188,13 +187,7 @@ public:
         delete[] comps;
     }
 
-    void addComputer(const Computer& comp) { add(comp); }
-    void removeComputer(int pos) { remove(pos); }
-    int getListSize() const { return getSize(); }
     void printList() const { printUpdate(2000000000); }
-    void printListUpdate(int year) const { printUpdate(year); }
-    void readList(const string& fname) { read(fname); }
-    void writeList(const string& fname) const { write(fname); }
 };
 
 void printCommands() {
@@ -211,7 +204,7 @@ int main() {
     int command, number, year;
     ComputerList list;
 
-    list.readList(file);
+    list.read(file);
     do {
         printCommands();
         cin >> command;
@@ -221,11 +214,11 @@ int main() {
         case 1:
             cout << "\nВведите информацию о компьютере:" << endl;
             comp.inputComputer();
-            list.addComputer(comp);
+            list.add(comp);
             cout << "\nИнформация обновлена!" << endl;
             break;
         case 2:
-            if (list.getListSize() == 0) {
+            if (list.getSize() == 0) {
                 cout << "\nСписок пуст!" << endl;
                 break;
             }
@@ -234,22 +227,22 @@ int main() {
             cout << endl;
             break;
         case 3:
-            if (list.getListSize() == 0) {
+            if (list.getSize() == 0) {
                 cout << "\nСписок пуст!" << endl;
                 break;
             }
-            cout << "\nВведите номер[1, " << list.getListSize() << "] -> ";
+            cout << "\nВведите номер[1, " << list.getSize() << "] -> ";
             cin >> number;
             cin.ignore();
-            if (number < 1 || number > list.getListSize()) {
+            if (number < 1 || number > list.getSize()) {
                 cout << "\nНеправильный номер!" << endl;
                 break;
             }
-            list.removeComputer(number - 1);
+            list.remove(number - 1);
             cout << "\nИнформация удалена" << endl;
             break;
         case 4:
-            if (list.getListSize() == 0) {
+            if (list.getSize() == 0) {
                 cout << "\nСписок пуст!" << endl;
                 break;
             }
@@ -257,7 +250,7 @@ int main() {
             cin >> year;
             cin.ignore();
             cout << "\nКомпьютеры для обновления:" << endl;
-            list.printListUpdate(year);
+            list.printUpdate(year);
             cout << endl;
             break;
         case 0:
@@ -269,6 +262,6 @@ int main() {
         }
     } while (command != 0);
 
-    list.writeList(file);
+    list.write(file);
     return 0;
 }
