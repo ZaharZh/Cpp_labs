@@ -15,34 +15,6 @@ private:
     int cost;
     int purchase_year;
 
-    void input() {
-        cout << "Процессор     : ";
-        getline(cin, processor);
-        cout << "Объем оперативной памяти, GB  : ";
-        cin >> vram;
-        cin.ignore();
-        cout << "Объем жесткого диска, GB : ";
-        cin >> vdisk;
-        cin.ignore();
-        cout << "Видеоадаптер    : ";
-        getline(cin, video_adapter);
-        cout << "Цена          : ";
-        cin >> cost;
-        cin.ignore();
-        cout << "Год закупки : ";
-        cin >> purchase_year;
-        cin.ignore();
-    }
-
-    void print() const {
-        cout << "Процессор     : " << processor << endl;
-        cout << "Объем оперативной памяти, GB  : " << vram << endl;
-        cout << "Объем жесткого диска, GB : " << vdisk << endl;
-        cout << "Видеоадаптер    : " << video_adapter << endl;
-        cout << "Цена          : " << cost << endl;
-        cout << "Год закупки   : " << purchase_year << endl;
-    }
-
     void fromStr(const string& str) {
         istringstream iss(str);
         getline(iss, processor, '#');
@@ -63,8 +35,46 @@ private:
     }
 
 public:
-    void inputComputer() { input(); }
-    void printComputer() const { print(); }
+    // Конструктор по умолчанию
+    Computer() : processor(""), vram(0), vdisk(0), video_adapter(""), cost(0), purchase_year(0) {}
+
+    // Конструктор с аргументами
+    Computer(const string& proc, int vram, int vdisk, const string& video_adapter, int cost, int purchase_year)
+        : processor(proc), vram(vram), vdisk(vdisk), video_adapter(video_adapter), cost(cost), purchase_year(purchase_year) {}
+
+    // Конструктор с аргументами для строки
+    Computer(const string& str) {
+        fromStr(str);
+    }
+
+    void inputComputer() {
+        cout << "Процессор     : ";
+        getline(cin, processor);
+        cout << "Объем оперативной памяти, GB  : ";
+        cin >> vram;
+        cin.ignore();
+        cout << "Объем жесткого диска, GB : ";
+        cin >> vdisk;
+        cin.ignore();
+        cout << "Видеоадаптер    : ";
+        getline(cin, video_adapter);
+        cout << "Цена          : ";
+        cin >> cost;
+        cin.ignore();
+        cout << "Год закупки : ";
+        cin >> purchase_year;
+        cin.ignore();
+    }
+
+    void printComputer() const {
+        cout << "Процессор     : " << processor << endl;
+        cout << "Объем оперативной памяти, GB  : " << vram << endl;
+        cout << "Объем жесткого диска, GB : " << vdisk << endl;
+        cout << "Видеоадаптер    : " << video_adapter << endl;
+        cout << "Цена          : " << cost << endl;
+        cout << "Год закупки   : " << purchase_year << endl;
+    }
+
     void fromString(const string& str) { fromStr(str); }
     string toString() const { return toStr(); }
 
@@ -158,8 +168,7 @@ private:
         }
         string line;
         while (getline(file, line)) {
-            Computer comp;
-            comp.fromString(line);
+            Computer comp(line);
             add(comp);
         }
         file.close();
@@ -174,7 +183,16 @@ private:
     }
 
 public:
+    // Конструктор по умолчанию
     ComputerList() : alloc(0), size(0), comps(nullptr) {}
+
+    // Конструктор с аргументами
+    ComputerList(int initialAlloc) : alloc(initialAlloc), size(0), comps(new Computer[initialAlloc]) {}
+
+    // Конструктор с аргументами для файла
+    ComputerList(const string& fname) : alloc(0), size(0), comps(nullptr) {
+        read(fname);
+    }
 
     ~ComputerList() {
         delete[] comps;
@@ -208,14 +226,13 @@ int main() {
         printCommands();
         cin >> command;
         cin.ignore();
-        Computer comp;
         switch (command) {
         case 1:
             cout << "\nВведите информацию о компьютере:" << endl;
+            Computer comp;
             comp.inputComputer();
             list.addComputer(comp);
             cout << "\nИнформация обновлена!" << endl;
-            cout << "\n";
             break;
         case 2:
             if (list.getListSize() == 0) {
@@ -258,7 +275,6 @@ int main() {
             break;
         default:
             cout << "\nНеверная команда!" << endl;
-            cout << "\n";
             break;
         }
     } while (command != 0);
