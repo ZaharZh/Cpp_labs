@@ -14,7 +14,7 @@ private:
     string video_adapter;
     int cost;
     int purchase_year;
-
+public:
     void fromStr(const string& str) {
         istringstream iss(str);
         getline(iss, processor, '#');
@@ -34,15 +34,11 @@ private:
         return oss.str();
     }
 
-public:
-    // Конструктор по умолчанию
     Computer() : processor(""), vram(0), vdisk(0), video_adapter(""), cost(0), purchase_year(0) {}
 
-    // Конструктор с аргументами
     Computer(const string& proc, int vram, int vdisk, const string& video_adapter, int cost, int purchase_year)
         : processor(proc), vram(vram), vdisk(vdisk), video_adapter(video_adapter), cost(cost), purchase_year(purchase_year) {}
 
-    // Конструктор с аргументами для строки
     Computer(const string& str) {
         fromStr(str);
     }
@@ -75,8 +71,12 @@ public:
         cout << "Год закупки   : " << purchase_year << endl;
     }
 
-    void fromString(const string& str) { fromStr(str); }
-    string toString() const { return toStr(); }
+    string getProcessor() const { return processor; }
+    int getVram() const { return vram; }
+    int getVdisk() const { return vdisk; }
+    string getVideoAdapter() const { return video_adapter; }
+    int getCost() const { return cost; }
+    int getPurchaseYear() const { return purchase_year; }
 };
 
 class ComputerList {
@@ -118,7 +118,7 @@ private:
     void printUpdate(int year) const {
         int pos = 0;
         for (; pos < size; ++pos) {
-            if (comps[pos].purchase_year <= year) {
+            if (comps[pos].getPurchaseYear() <= year) {
                 break;
             }
         }
@@ -129,8 +129,8 @@ private:
 
         int plen = 9, vlen = 13;
         for (int i = pos; i < size; ++i) {
-            plen = max(plen, static_cast<int>(comps[i].processor.length()));
-            vlen = max(vlen, static_cast<int>(comps[i].video_adapter.length()));
+            plen = max(plen, static_cast<int>(comps[i].getProcessor().length()));
+            vlen = max(vlen, static_cast<int>(comps[i].getVideoAdapter().length()));
         }
 
         string stars(plen + vlen + 58, '*');
@@ -142,14 +142,14 @@ private:
              << setw(9) << "Год" << " |" << endl;
         cout << " " << stars << endl;
         for (int i = pos, cnt = 0; i < size; ++i) {
-            if (comps[i].purchase_year > year) {
+            if (comps[i].getPurchaseYear() > year) {
                 continue;
             }
             ++cnt;
-            cout << "| " << setw(2) << cnt << " | " << setw(plen) << comps[i].processor << " | "
-                 << setw(9) << comps[i].vram << " | " << setw(9) << comps[i].vdisk << " | "
-                 << setw(vlen) << comps[i].video_adapter << " | " << setw(9) << comps[i].cost << " | "
-                 << setw(9) << comps[i].purchase_year << " |" << endl;
+            cout << "| " << setw(2) << cnt << " | " << setw(plen) << comps[i].getProcessor() << " | "
+                 << setw(9) << comps[i].getVram() << " | " << setw(9) << comps[i].getVdisk() << " | "
+                 << setw(vlen) << comps[i].getVideoAdapter() << " | " << setw(9) << comps[i].getCost() << " | "
+                 << setw(9) << comps[i].getPurchaseYear() << " |" << endl;
         }
         cout << " " << stars << endl;
     }
@@ -170,19 +170,16 @@ private:
     void write(const string& fname) const {
         ofstream file(fname);
         for (int i = 0; i < size; ++i) {
-            file << comps[i].toString() << endl;
+            file << comps[i].toStr() << endl;
         }
         file.close();
     }
 
 public:
-    // Конструктор по умолчанию
     ComputerList() : alloc(0), size(0), comps(nullptr) {}
 
-    // Конструктор с аргументами
     ComputerList(int initialAlloc) : alloc(initialAlloc), size(0), comps(new Computer[initialAlloc]) {}
 
-    // Конструктор с аргументами для файла
     ComputerList(const string& fname) : alloc(0), size(0), comps(nullptr) {
         read(fname);
     }
@@ -219,10 +216,10 @@ int main() {
         printCommands();
         cin >> command;
         cin.ignore();
+        Computer comp;
         switch (command) {
         case 1:
             cout << "\nВведите информацию о компьютере:" << endl;
-            Computer comp;
             comp.inputComputer();
             list.addComputer(comp);
             cout << "\nИнформация обновлена!" << endl;
