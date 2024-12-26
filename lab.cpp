@@ -14,7 +14,7 @@ private:
     string video_adapter;
     int cost;
     int purchase_year;
-
+public:
     void fromStr(const string& str) {
         istringstream iss(str);
         getline(iss, processor, '#');
@@ -34,15 +34,11 @@ private:
         return oss.str();
     }
 
-public:
-    // Конструктор по умолчанию
     Computer() : processor(""), vram(0), vdisk(0), video_adapter(""), cost(0), purchase_year(0) {}
 
-    // Конструктор с аргументами
     Computer(const string& proc, int vram, int vdisk, const string& video_adapter, int cost, int purchase_year)
         : processor(proc), vram(vram), vdisk(vdisk), video_adapter(video_adapter), cost(cost), purchase_year(purchase_year) {}
 
-    // Конструктор с аргументами для строки
     Computer(const string& str) {
         fromStr(str);
     }
@@ -74,9 +70,6 @@ public:
         cout << "Цена          : " << cost << endl;
         cout << "Год закупки   : " << purchase_year << endl;
     }
-
-    void fromString(const string& str) { fromStr(str); }
-    string toString() const { return toStr(); }
 
     string getProcessor() const { return processor; }
     int getVram() const { return vram; }
@@ -177,19 +170,16 @@ private:
     void write(const string& fname) const {
         ofstream file(fname);
         for (int i = 0; i < size; ++i) {
-            file << comps[i].toString() << endl;
+            file << comps[i].toStr() << endl;
         }
         file.close();
     }
 
 public:
-    // Конструктор по умолчанию
     ComputerList() : alloc(0), size(0), comps(nullptr) {}
 
-    // Конструктор с аргументами
     ComputerList(int initialAlloc) : alloc(initialAlloc), size(0), comps(new Computer[initialAlloc]) {}
 
-    // Конструктор с аргументами для файла
     ComputerList(const string& fname) : alloc(0), size(0), comps(nullptr) {
         read(fname);
     }
@@ -226,10 +216,10 @@ int main() {
         printCommands();
         cin >> command;
         cin.ignore();
+        Computer comp;
         switch (command) {
         case 1:
             cout << "\nВведите информацию о компьютере:" << endl;
-            Computer comp;
             comp.inputComputer();
             list.addComputer(comp);
             cout << "\nИнформация обновлена!" << endl;
